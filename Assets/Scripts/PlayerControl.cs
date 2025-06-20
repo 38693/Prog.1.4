@@ -2,37 +2,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class NewBehaviourScript : MonoBehaviour
 {
     private Rigidbody rb;
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private bool IsOnFloor = false;    
-
+    [SerializeField] private bool IsOnFloor = false;
+    [SerializeField] private GameObject coinPrefab;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
 
-        transform.position = new Vector3(0f, 1.3f, 0f);
-        transform.rotation = Quaternion.Euler(0f, 90f, 0f);
-        transform.localScale = Vector3.one * 1.5f;
+        for (int i = 0; i < 30; i++)
+        {
+            float randomX = Random.Range(-10f, 10f);
+            float randomY = Random.Range(-10f, 10f);
+            Vector3 coinPosition = new Vector3(randomX, 0.5f, randomY);
+            Quaternion coinRotate = Quaternion.Euler(90f, 0f, 0f);
+            Instantiate(coinPrefab, coinPosition, coinRotate);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position = transform.position + transform.forward * moveSpeed * Time.deltaTime * Input.GetAxis("Vertical");
-
-        transform.Rotate(Vector3.up, 2.5f * Input.GetAxis("Horizontal"));
-
+        float HorizontalInput = Input.GetAxis("Horizontal");
+        float VerticalInput = Input.GetAxis("Vertical");
+        Vector3 movement = new Vector3(HorizontalInput, 0f, VerticalInput) * moveSpeed * Time.deltaTime;
+        transform.Translate(movement);
+        
         if (Input.GetKeyDown(KeyCode.Space) && IsOnFloor)
         {
             rb.AddForce(Vector3.up * 300f, ForceMode.Force);
 
             IsOnFloor = false;
-            Debug.Log("Billenzien");
+            Debug.Log("Test");
         }
     }
 
